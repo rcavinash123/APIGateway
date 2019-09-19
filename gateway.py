@@ -16,6 +16,10 @@ def healthResponse():
         resp = jsonify(success=True)
         resp.status_code = 200
         return resp
+    else:
+        resp = jsonify(success=False)
+        resp.status_code = 500
+        return resp
 
 def zoo_healthCheck():
     try:

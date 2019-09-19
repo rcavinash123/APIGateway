@@ -36,6 +36,6 @@ spec:
              path: /auth/health
              port: 4001
              scheme: HTTP
-          initialDelaySeconds: 5
+          initialDelaySeconds: 15
           periodSeconds: 5
           successThreshold: 1
