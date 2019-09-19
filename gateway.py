@@ -12,9 +12,19 @@ app = Flask(__name__)
 
 @app.route('/auth/health',methods=['GET'])
 def healthResponse():
-    resp = jsonify(success=True)
-    resp.status_code = 200
-    return resp
+    if self.zoo_healthCheck() == True:
+        resp = jsonify(success=True)
+        resp.status_code = 200
+        return resp
+
+def zoo_healthCheck():
+    try:
+        zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
+        zk.start()
+        return True
+    except:
+        print("Cannot connect to zookeeper")
+        return False
 
 @app.route('/auth/validate/<userName>/<password>',methods=['POST'])
 def userValidate(userName,password):
