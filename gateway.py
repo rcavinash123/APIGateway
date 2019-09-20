@@ -18,21 +18,12 @@ def healthResponse():
     try:
         print("Before Checking For Health Information")
         print("Before Checking For Zookeeper Connectivity")
-        if zoo_healthCheck() == True:
-            return 'OK',200
-        else:
-            return 'FAIL',500
-    except:
-        print("Exception Occured")        
-
-def zoo_healthCheck():
-    try:
         zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
         zk.start()
-        return True
+        return 'OK',200
     except:
-        print("Cannot connect to zookeeper")
-        return False
+        return 'FAIL',200       
+
 
 @app.route('/auth/validate/<userName>/<password>',methods=['POST'])
 def userValidate(userName,password):
