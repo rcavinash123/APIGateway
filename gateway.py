@@ -14,7 +14,7 @@ logging.basicConfig()
 
 app = Flask(__name__)
 
-@app.route('/healthz',methods=['GET'])
+@app.route('/auth/healthz',methods=['GET'])
 def healthResponse():
     jresp = json.dumps({"status":"pass"})
     resp = Response(jresp, status=200, mimetype='application/json')
