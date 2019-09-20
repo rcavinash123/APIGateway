@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: apigateway-container
-        image: rcavinash123/apigateway:v1.0.1
+        image: rcavinash123/apigateway:v1.0.2
         ports:
           - containerPort: 4001
             protocol: TCP
@@ -35,6 +35,6 @@ spec:
           httpGet:
             path: /auth/healthz
             port: 4001
-          initialDelaySeconds: 3
-          periodSeconds: 3
+          initialDelaySeconds: 20
+          periodSeconds: 20
           

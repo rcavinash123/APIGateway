@@ -16,9 +16,17 @@ app = Flask(__name__)
 
 @app.route('/auth/healthz',methods=['GET'])
 def healthResponse():
-    jresp = json.dumps({"status":"pass"})
-    resp = Response(jresp, status=200, mimetype='application/json')
-    return resp
+    try:
+        zk = KazooClient(hosts=config.ZOOKEEPER_HOST,timeout=5,max_retries=3)
+        zk.start()
+        jresp = json.dumps({"status":"pass"})
+        resp = Response(jresp, status=200, mimetype='application/json')
+        return resp
+    except:
+        print('Failed to connect to zookeeper')
+        jresp = json.dumps({"status":"fail","reason":"Failed to connect to zookeeper"})
+        resp = Response(jresp, status=500, mimetype='application/json')
+        return resp
 
 @app.route('/auth/validate/<userName>/<password>',methods=['POST'])
 def userValidate(userName,password):
