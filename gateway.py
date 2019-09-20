@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask import Response
 from kazoo.client import KazooClient
 import json
 import requests
@@ -15,8 +16,7 @@ app = Flask(__name__)
 
 @app.route('/auth/health',methods=['GET'])
 def healthResponse():
-    resp = jsonify(success=True)
-    resp.status_code = 200
+    resp = Response('OK',status=200)
     return resp
 
 @app.route('/auth/validate/<userName>/<password>',methods=['POST'])
