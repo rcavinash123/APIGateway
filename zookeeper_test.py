@@ -5,7 +5,7 @@ import logging
 logging.basicConfig()
 import sys
 
-sys.exit(0)
+sys.exit(1)
 
 # try:
 #     zk = KazooClient(hosts='192.168.200.197:4184')
