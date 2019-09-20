@@ -7,6 +7,9 @@ import requests
 import random
 from requests.exceptions import HTTPError
 import config
+import logging
+
+logging.basicConfig()
 
 app = Flask(__name__)
 

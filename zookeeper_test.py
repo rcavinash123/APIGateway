@@ -1,6 +1,8 @@
 from kazoo.client import KazooClient
 import json
 import requests
+import logging
+logging.basicConfig()
 
 try:
     zk = KazooClient(hosts='192.168.200.197:2184')
