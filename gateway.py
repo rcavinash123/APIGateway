@@ -15,8 +15,9 @@ app = Flask(__name__)
 
 @app.route('/auth/health',methods=['GET'])
 def healthResponse():
-    return 'OK',200      
-
+    resp = jsonify(success=True)
+    resp.status_code = 200
+    return resp
 
 @app.route('/auth/validate/<userName>/<password>',methods=['POST'])
 def userValidate(userName,password):
