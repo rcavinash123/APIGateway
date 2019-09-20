@@ -15,18 +15,15 @@ app = Flask(__name__)
 
 @app.route('/auth/health',methods=['GET'])
 def healthResponse():
-    print("Before Checking For Health Information")
-    resp = jsonify(success=False)
-    resp.status_code = 500
-    print("Before Checking For Zookeeper Connectivity")
-    if zoo_healthCheck() == True:
-        resp = jsonify(success=True)
-        resp.status_code = 200
-    else:
-        resp = jsonify(success=False)
-        resp.status_code = 500
-    print("Before Returning Response : " + str(resp.status_code))
-    return resp
+    try:
+        print("Before Checking For Health Information")
+        print("Before Checking For Zookeeper Connectivity")
+        if zoo_healthCheck() == True:
+            return 'OK',200
+        else:
+            return 'FAIL',500
+    except:
+        print("Exception Occured")        
 
 def zoo_healthCheck():
     try:
