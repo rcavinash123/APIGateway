@@ -32,10 +32,10 @@ spec:
           - name: DEBUG_MODE
             value: "0"
         readinessProbe:
-          httpGet:
-             path: /auth/health
-             port: 4001
-             scheme: HTTP
+          exec:
+            command:
+            - python
+            - zookeeper_test.py
           initialDelaySeconds: 15
           periodSeconds: 5
-          successThreshold: 1
+          

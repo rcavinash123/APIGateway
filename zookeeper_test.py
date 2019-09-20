@@ -3,15 +3,18 @@ import json
 import requests
 import logging
 logging.basicConfig()
+import sys
 
-try:
-    zk = KazooClient(hosts='192.168.200.197:4184')
-    zk.start()
-    if zk.exists("/microservices"):
-        print("MicroServices Exists")
-    else:
-        print("Microservices Not Exists")
-        zk.create("/microservices","")
-except:
-    print("Cannot connect to zookeeper")
+sys.exit(0)
+
+# try:
+#     zk = KazooClient(hosts='192.168.200.197:4184')
+#     zk.start()
+#     if zk.exists("/microservices"):
+#         print("MicroServices Exists")
+#     else:
+#         print("Microservices Not Exists")
+#         zk.create("/microservices","")
+# except:
+#     print("Cannot connect to zookeeper")
 

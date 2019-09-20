@@ -14,11 +14,6 @@ logging.basicConfig()
 
 app = Flask(__name__)
 
-@app.route('/auth/health',methods=['GET'])
-def healthResponse():
-    resp = Response('OK',status=200)
-    return resp
-
 @app.route('/auth/validate/<userName>/<password>',methods=['POST'])
 def userValidate(userName,password):
     zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
