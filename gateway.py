@@ -15,14 +15,15 @@ app = Flask(__name__)
 
 @app.route('/auth/health',methods=['GET'])
 def healthResponse():
+    resp = jsonify(success=False)
+    resp.status_code = 500
     if zoo_healthCheck() == True:
         resp = jsonify(success=True)
         resp.status_code = 200
-        return resp
     else:
         resp = jsonify(success=False)
         resp.status_code = 500
-        return resp
+    return resp
 
 def zoo_healthCheck():
     try:
