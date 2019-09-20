@@ -3,4 +3,4 @@ import multiprocessing
 
 PORT = int(env.get("PORT", 4001))
 DEBUG_MODE = int(env.get("DEBUG_MODE", 0))
-ZOOKEEPER_HOST = "192.168.200.197:2184"
+ZOOKEEPER_HOST = "192.168.200.197:4184"

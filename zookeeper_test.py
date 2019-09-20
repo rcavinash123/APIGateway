@@ -5,7 +5,7 @@ import logging
 logging.basicConfig()
 
 try:
-    zk = KazooClient(hosts='192.168.200.197:2184')
+    zk = KazooClient(hosts='192.168.200.197:4184')
     zk.start()
     if zk.exists("/microservices"):
         print("MicroServices Exists")
