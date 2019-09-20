@@ -19,6 +19,11 @@ def healthResponse():
     try:
         zk = KazooClient(hosts=config.ZOOKEEPER_HOST,timeout=5,max_retries=3)
         zk.start()
+        data = json.dumps({"endpoints":{"url":"http://apigateway.default.svc.cluster.local:4001"}})
+        if zk.exists("/apigateway"):
+            zk.set("/apigateway",data)
+        else:
+            zk.create("/apigateway",data)
         jresp = json.dumps({"status":"pass"})
         resp = Response(jresp, status=200, mimetype='application/json')
         return resp
@@ -33,36 +38,31 @@ def userValidate(userName,password):
     zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
     zk.start()
     services = []
-    if zk.exists("/microservices"):
-        # print(zk.get_children("/jarvis"))
-        for service in zk.get_children("/microservices"):
-            data,stat = zk.get("/microservices/" + str(service))
-            # print(str(service) + " Data : " + data.decode('utf-8'))
-            jsonData = json.loads(data.decode('utf-8'))
-            healthURL = jsonData["healthcheck"]["url"]
-            try:
-                healthData = requests.get(str(healthURL),timeout=1)
-                healthData.raise_for_status()
-            except HTTPError as http_err:
-                print('HTTP error occurred:') 
-            except Exception as err:
-                print('Other error occurred')
+    if zk.exists("/microservices/authService"):
+        data = zk.get("/microservices/authService")
+        jsonData = json.loads(data.decode('utf-8'))
+        authURL = jsonData["endpoints"]["url"]
+        try:
+            authResponse = requests.post(userName,password)
+        except HTTPError as http_err:
+            jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
+            resp = Response(jsonData,status=200)
+            return resp 
+        except Exception as err:
+            jsonData = json.dumps({"status":"Failed","code":"500","reason":str(err)})
+            resp = Response(jsonData,status=200)
+            return resp
+        else:
+            if authResponse:
+                return authResponse
             else:
-                if healthData:
-                    jsonhealthData = healthData.json()["result"]
-                    # print(str(service) + " : " + " Memory : " + jsonhealthData["memPercent"] + " CPU : " + jsonhealthData["cpuPercent"] + " Disk : " + jsonhealthData["diskPercent"])
-                    if float(jsonhealthData["memPercent"])<80.0 and float(jsonhealthData["cpuPercent"])<50.0 and float(jsonhealthData["diskPercent"])<20.0 :
-                        services.append(jsonData["authservice"]["url"])
-    zk.stop()
-    if len(services)>0:
-        pServiceURL = str(random.choice(services))
-        pServiceURL = pServiceURL + userName + "/" + password
-        print("Picked  : " + pServiceURL)
-        return requests.post(pServiceURL).json()
+                jsonData = json.dumps({"status":"Failed","code":"500","reason":"Recieved empty response from the service"})
+                authResponse = Response(jsonData,status=200)
+                return authResponse
     else:
-        result = json.dumps({"result":{"Error":"No Service Found"}})
-        print(result)
-        return result
+        jsonData = json.dumps({"status":"Failed","code":"500","reason":"Node does not exists"})
+        resp = Response(jsonData,status=200)
+        return resp
 
 if __name__ == '__main__':
     app.run(debug=config.DEBUG_MODE,host='0.0.0.0',port=config.PORT)
