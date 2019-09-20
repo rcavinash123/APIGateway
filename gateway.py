@@ -15,14 +15,7 @@ app = Flask(__name__)
 
 @app.route('/auth/health',methods=['GET'])
 def healthResponse():
-    try:
-        print("Before Checking For Health Information")
-        print("Before Checking For Zookeeper Connectivity")
-        zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
-        zk.start()
-        return 'OK',200
-    except:
-        return 'FAIL',200       
+    return 'OK',200      
 
 
 @app.route('/auth/validate/<userName>/<password>',methods=['POST'])
