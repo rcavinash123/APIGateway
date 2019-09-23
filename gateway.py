@@ -91,7 +91,7 @@ def userProfileGet(ID):
         JsonData = json.loads(Data)
         profileURL = str(JsonData["profileget"]["url"])
         try:
-            Response = requests.post(profileURL + ID)
+            Response = requests.get(profileURL + ID)
         except HTTPError as http_err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
             resp = Response(jsonData,status=200)
