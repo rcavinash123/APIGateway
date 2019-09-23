@@ -49,7 +49,7 @@ def userValidate(userName,password):
         
         #authURL = "http://0.0.0.0:4002/auth/validate/"
         
-        print("Step1")
+        #print("Step1")
 
         try:
             authResponse = requests.post(authURL + userName + "/" + password)
@@ -73,6 +73,85 @@ def userValidate(userName,password):
                 authResponse = Response(jsonData,status=200)
                 zk.stop()
                 return authResponse
+    else:
+        jsonData = json.dumps({"status":"Failed","code":"500","reason":"Node does not exists"})
+        resp = Response(jsonData,status=200)
+        zk.stop()
+        return resp
+@app.route('/userprofile/userprofileget/<ID>',methods=['GET'])
+def userProfileGet(ID):
+    zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
+    zk.start()
+    services = []
+    if zk.exists("/microservices/authservice"):
+        data = zk.get("/microservices/authservice")
+        data = json.dumps(data)
+        jsonData = json.loads(data)
+        Data = jsonData[0]
+        JsonData = json.loads(Data)
+        profileURL = str(JsonData["profileget"]["url"])
+        try:
+            Response = requests.post(profileURL + ID)
+        except HTTPError as http_err:
+            jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
+            resp = Response(jsonData,status=200)
+            zk.stop()
+            return resp 
+        except Exception as err:
+            jsonData = json.dumps({"status":"Failed","code":"500","reason":str(err)})
+            resp = Response(jsonData,status=200)
+            zk.stop()
+            return resp
+        else:
+            if Response:
+                Response = Response(Response,status=200)
+                zk.stop()
+                return Response
+            else:
+                jsonData = json.dumps({"status":"Failed","code":"500","reason":"Recieved empty response from the service"})
+                Response = Response(jsonData,status=200)
+                zk.stop()
+                return Response
+    else:
+        jsonData = json.dumps({"status":"Failed","code":"500","reason":"Node does not exists"})
+        resp = Response(jsonData,status=200)
+        zk.stop()
+        return resp
+
+@app.route('/userprofile/userprofileupdate/<Id>/<firstName>/<lastName>/<emailAddr>',methods=['POST'])
+def userProfileUpdate(Id,firstName,lastName,emailAddr):
+    zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
+    zk.start()
+    services = []
+    if zk.exists("/microservices/authservice"):
+        data = zk.get("/microservices/authservice")
+        data = json.dumps(data)
+        jsonData = json.loads(data)
+        Data = jsonData[0]
+        JsonData = json.loads(Data)
+        profileURL = str(JsonData["profileupdate"]["url"])
+        try:
+            Response = requests.post(profileURL + ID + "/" + firstName + "/" + lastName + "/" + emailAddr)
+        except HTTPError as http_err:
+            jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
+            resp = Response(jsonData,status=200)
+            zk.stop()
+            return resp 
+        except Exception as err:
+            jsonData = json.dumps({"status":"Failed","code":"500","reason":str(err)})
+            resp = Response(jsonData,status=200)
+            zk.stop()
+            return resp
+        else:
+            if Response:
+                Response = Response(Response,status=200)
+                zk.stop()
+                return Response
+            else:
+                jsonData = json.dumps({"status":"Failed","code":"500","reason":"Recieved empty response from the service"})
+                Response = Response(jsonData,status=200)
+                zk.stop()
+                return Response
     else:
         jsonData = json.dumps({"status":"Failed","code":"500","reason":"Node does not exists"})
         resp = Response(jsonData,status=200)
