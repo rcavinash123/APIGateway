@@ -11,13 +11,10 @@ try:
     zk = KazooClient(hosts='192.168.200.198:4184,192.168.200.197:4184')
     zk.start()
     print("Starting Zoo Keeper")
-    if zk.exists("/microservices/authservice"):
-        data = zk.get("/microservices/authservice")
-        data = json.dumps(data)
-        jsonData = json.loads(data)
-        Data = jsonData[0]
-        JsonData = json.loads(Data)
-        print("AuthURL : " + str(JsonData["authservice"]["url"]))
+    if zk.exists("/apigateway"):
+        print("API Gateway Existis")
+        data = json.dumps({"endpoints":{"url":"http://192.168.200.196:30954"}})
+        zk.set("/apigateway",data)
         zk.stop()
     else:
         print("Node doesn not exists")
