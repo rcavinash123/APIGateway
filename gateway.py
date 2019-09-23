@@ -38,12 +38,20 @@ def userValidate(userName,password):
     zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
     zk.start()
     services = []
-    if zk.exists("/microservices/authService"):
-        data = zk.get("/microservices/authService")
-        jsonData = json.loads(data.decode('utf-8'))
-        authURL = jsonData["endpoints"]["url"]
+    if zk.exists("/microservices/authservice"):
+        data = zk.get("/microservices/authservice")
+        data = json.dumps(data)
+        jsonData = json.loads(data)
+        Data = jsonData[0]
+        JsonData = json.loads(Data)
+        authURL = str(JsonData["authservice"]["url"])
+        
+        #authURL = "http://0.0.0.0:4002/auth/validate/"
+        
+        print("Step1")
+
         try:
-            authResponse = requests.post(userName,password)
+            authResponse = requests.post(authURL + userName + "/" + password)
         except HTTPError as http_err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
             resp = Response(jsonData,status=200)
@@ -54,6 +62,7 @@ def userValidate(userName,password):
             return resp
         else:
             if authResponse:
+                authResponse = Response(authResponse,status=200)
                 return authResponse
             else:
                 jsonData = json.dumps({"status":"Failed","code":"500","reason":"Recieved empty response from the service"})
