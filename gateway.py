@@ -78,6 +78,7 @@ def userValidate(userName,password):
         resp = Response(jsonData,status=200)
         zk.stop()
         return resp
+
 @app.route('/userprofile/userprofileget/<ID>',methods=['GET'])
 def userProfileGet(ID):
     zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
@@ -90,18 +91,19 @@ def userProfileGet(ID):
         Data = jsonData[0]
         JsonData = json.loads(Data)
         profileURL = str(JsonData["profileget"]["url"])
+
         try:
             profileResp = requests.get(profileURL + ID)
         except HTTPError as http_err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
-            resp = Response(jsonData,status=200)
+            #resp = Response(jsonData,status=200)
             zk.stop()
-            return resp 
+            return jsonData,200 
         except Exception as err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(err)})
-            resp = Response(jsonData,status=200)
+            #resp = flask.Response(jsonData,status=200)
             zk.stop()
-            return resp
+            return jsonData,200
         else:
             if profileResp:
                 profileResp = Response(profileResp,status=200)
@@ -109,14 +111,14 @@ def userProfileGet(ID):
                 return profileResp
             else:
                 jsonData = json.dumps({"status":"Failed","code":"500","reason":"Recieved empty response from the service"})
-                Response = Response(jsonData,status=200)
+                #Response = Response(jsonData,status=200)
                 zk.stop()
-                return Response
+                return jsonData,200
     else:
         jsonData = json.dumps({"status":"Failed","code":"500","reason":"Node does not exists"})
-        resp = Response(jsonData,status=200)
+        #resp = Response(jsonData,status=200)
         zk.stop()
-        return resp
+        return jsonData,200
 
 @app.route('/userprofile/userprofileupdate/<Id>/<firstName>/<lastName>/<emailAddr>',methods=['POST'])
 def userProfileUpdate(Id,firstName,lastName,emailAddr):
@@ -134,14 +136,14 @@ def userProfileUpdate(Id,firstName,lastName,emailAddr):
             profileResp = requests.post(profileURL + ID + "/" + firstName + "/" + lastName + "/" + emailAddr)
         except HTTPError as http_err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
-            resp = Response(jsonData,status=200)
+            #resp = Response(jsonData,status=200)
             zk.stop()
-            return resp 
+            return jsonData,200 
         except Exception as err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(err)})
-            resp = Response(jsonData,status=200)
+            #resp = Response(jsonData,status=200)
             zk.stop()
-            return resp
+            return jsonData,200
         else:
             if profileResp:
                 profileResp = Response(profileResp,status=200)
@@ -149,14 +151,14 @@ def userProfileUpdate(Id,firstName,lastName,emailAddr):
                 return Response
             else:
                 jsonData = json.dumps({"status":"Failed","code":"500","reason":"Recieved empty response from the service"})
-                Response = Response(jsonData,status=200)
+                #Response = Response(jsonData,status=200)
                 zk.stop()
-                return Response
+                return jsonData,200
     else:
         jsonData = json.dumps({"status":"Failed","code":"500","reason":"Node does not exists"})
-        resp = Response(jsonData,status=200)
+        #resp = Response(jsonData,status=200)
         zk.stop()
-        return resp
+        return jsonData,200
 
 if __name__ == '__main__':
     app.run(debug=config.DEBUG_MODE,host='0.0.0.0',port=config.PORT)
