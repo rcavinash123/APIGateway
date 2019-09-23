@@ -25,6 +25,7 @@ def healthResponse():
         else:
             zk.create("/apigateway",data)
         jresp = json.dumps({"status":"pass"})
+        zk.stop()
         resp = Response(jresp, status=200, mimetype='application/json')
         return resp
     except:
@@ -55,22 +56,27 @@ def userValidate(userName,password):
         except HTTPError as http_err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
             resp = Response(jsonData,status=200)
+            zk.stop()
             return resp 
         except Exception as err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(err)})
             resp = Response(jsonData,status=200)
+            zk.stop()
             return resp
         else:
             if authResponse:
                 authResponse = Response(authResponse,status=200)
+                zk.stop()
                 return authResponse
             else:
                 jsonData = json.dumps({"status":"Failed","code":"500","reason":"Recieved empty response from the service"})
                 authResponse = Response(jsonData,status=200)
+                zk.stop()
                 return authResponse
     else:
         jsonData = json.dumps({"status":"Failed","code":"500","reason":"Node does not exists"})
         resp = Response(jsonData,status=200)
+        zk.stop()
         return resp
 
 if __name__ == '__main__':
