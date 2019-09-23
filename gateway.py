@@ -91,7 +91,7 @@ def userProfileGet(ID):
         JsonData = json.loads(Data)
         profileURL = str(JsonData["profileget"]["url"])
         try:
-            Response = requests.get(profileURL + ID)
+            profileResp = requests.get(profileURL + ID)
         except HTTPError as http_err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
             resp = Response(jsonData,status=200)
@@ -103,10 +103,10 @@ def userProfileGet(ID):
             zk.stop()
             return resp
         else:
-            if Response:
-                Response = Response(Response,status=200)
+            if profileResp:
+                profileResp = Response(profileResp,status=200)
                 zk.stop()
-                return Response
+                return profileResp
             else:
                 jsonData = json.dumps({"status":"Failed","code":"500","reason":"Recieved empty response from the service"})
                 Response = Response(jsonData,status=200)
@@ -131,7 +131,7 @@ def userProfileUpdate(Id,firstName,lastName,emailAddr):
         JsonData = json.loads(Data)
         profileURL = str(JsonData["profileupdate"]["url"])
         try:
-            Response = requests.post(profileURL + ID + "/" + firstName + "/" + lastName + "/" + emailAddr)
+            profileResp = requests.post(profileURL + ID + "/" + firstName + "/" + lastName + "/" + emailAddr)
         except HTTPError as http_err:
             jsonData = json.dumps({"status":"Failed","code":"500","reason":str(http_err)})
             resp = Response(jsonData,status=200)
@@ -143,8 +143,8 @@ def userProfileUpdate(Id,firstName,lastName,emailAddr):
             zk.stop()
             return resp
         else:
-            if Response:
-                Response = Response(Response,status=200)
+            if profileResp:
+                profileResp = Response(profileResp,status=200)
                 zk.stop()
                 return Response
             else:
