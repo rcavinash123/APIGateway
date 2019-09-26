@@ -19,7 +19,7 @@ def healthResponse():
     try:
         zk = KazooClient(hosts=config.ZOOKEEPER_HOST,timeout=5,max_retries=3)
         zk.start()
-        jresp = jsonify({"result":{"status":"true","code":"200"}})
+        jresp = json.dumps({"result":{"status":"true","code":"200"}})
         zk.stop()
         resp = Response(jresp, status=200, mimetype='application/json')
         return resp
