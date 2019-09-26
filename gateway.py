@@ -176,7 +176,7 @@ def userBalanceGet(ID):
             zk.stop()
             return Response(jsonData,200,content_type="application/json")
         except Exception as err:
-            jsonData = jsonifyumps({"result":{"status":"false","code":"500","reason":str(err)}})
+            jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(err)}})
             #resp = Response(jsonData,status=200)
             zk.stop()
             return Response(jsonData,200,content_type="application/json")
