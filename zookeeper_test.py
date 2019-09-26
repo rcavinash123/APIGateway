@@ -13,8 +13,8 @@ try:
     print("Starting Zoo Keeper")
     if zk.exists("/apigateway"):
         print("API Gateway Existis")
-        data = json.dumps({"endpoints":{"url":"http://192.168.200.196:30954"}})
-        zk.set("/apigateway",data)
+        #data = json.dumps({"endpoints":{"url":"http://192.168.200.196:30954"}})
+        #zk.set("/apigateway",data)
         data = zk.get("/apigateway")
         print(str(data))
         zk.stop()

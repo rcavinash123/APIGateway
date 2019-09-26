@@ -46,10 +46,6 @@ def userValidate(userName,password):
         Data = jsonData[0]
         JsonData = json.loads(Data)
         authURL = str(JsonData["authservice"]["url"])
-        
-        #authURL = "http://0.0.0.0:4002/auth/validate/"
-        
-        #print("Step1")
 
         try:
             authResponse = requests.post(authURL + userName + "/" + password)
@@ -84,8 +80,8 @@ def userProfileGet(ID):
     zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
     zk.start()
     services = []
-    if zk.exists("/microservices/authservice"):
-        data = zk.get("/microservices/authservice")
+    if zk.exists("/microservices/profileservice"):
+        data = zk.get("/microservices/profileservice")
         data = json.dumps(data)
         jsonData = json.loads(data)
         Data = jsonData[0]
@@ -125,8 +121,8 @@ def userProfileUpdate(Id,firstName,lastName,emailAddr):
     zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
     zk.start()
     services = []
-    if zk.exists("/microservices/authservice"):
-        data = zk.get("/microservices/authservice")
+    if zk.exists("/microservices/profileservice"):
+        data = zk.get("/microservices/profileservice")
         data = json.dumps(data)
         jsonData = json.loads(data)
         Data = jsonData[0]
