@@ -169,7 +169,9 @@ def userBalanceGet(ID):
         #balanceURL = "http://0.0.0.0:4004/acct/balanceget/"
 
         try:
+            print("Before sending Request")
             balanceResp = requests.get(balanceURL + ID)
+            print("After getting response")
         except HTTPError as http_err:
             jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(http_err)}})
             #resp = Response(jsonData,status=200)
