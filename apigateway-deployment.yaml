@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: apigateway
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
    type: RollingUpdate
    rollingUpdate:
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: apigateway-container
-        image: rcavinash123/apigateway:v1.1.4
+        image: rcavinash123/apigateway:v1.1.5
         ports:
           - containerPort: 4001
             protocol: TCP

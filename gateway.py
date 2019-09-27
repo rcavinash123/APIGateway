@@ -25,48 +25,59 @@ def healthResponse():
         return resp
     except:
         print('Failed to connect to zookeeper')
-        jresp = jsonifyumps({"result":{"status":"false","code":"500","reason":"Failed to connect to zookeeper"}})
+        jresp = json.dumps({"result":{"status":"false","code":"500","reason":"Failed to connect to zookeeper"}})
         resp = Response(jresp, status=500, mimetype='application/json')
         return resp
 
 @app.route('/auth/validate/<userName>/<password>',methods=['POST'])
 def userValidate(userName,password):
+    print("Request for validating credentials recieved")
     zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
     zk.start()
     services = []
+    print("Before checking zookeeper node for authservice url")
     if zk.exists("/microservices/authservice"):
+        print("Zookeeper node exists for auth service")
         data = zk.get("/microservices/authservice")
         data = json.dumps(data)
         jsonData = json.loads(data)
         Data = jsonData[0]
         JsonData = json.loads(Data)
         authURL = str(JsonData["authservice"]["url"])
-
+        print("AuthServiceURL : " + authURL)
         #authURL = "http://0.0.0.0:4002/auth/validate/"
 
         try:
+            print("Before sending request to authurl")
             authResponse = requests.post(authURL + userName + "/" + password)
+            print("Got response from auth url")
         except HTTPError as http_err:
-            jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(http_err)}})
+            print("Http error has occured : " + str(http_err))
+            jsonData = json.dumps({"result":{"status":"false","code":"500","reason":str(http_err)}})
             resp = Response(jsonData,status=200,content_type="application/json")
             zk.stop()
             return resp 
         except Exception as err:
-            jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(err)}})
+            print("Exception occured : " + str(err))
+            jsonData = json.dumps({"result":{"status":"false","code":"500","reason":str(err)}})
             resp = Response(jsonData,status=200)
             zk.stop()
             return resp
         else:
             if authResponse:
+                print("Got valid auth response")
                 zk.stop()
+                print("Before sending response")
                 return Response(authResponse,status=200,content_type="application/json")
             else:
-                jsonData = jsonify({"result":{"status":"false","code":"500","reason":"Recieved empty response from the service"}})
+                print("Got invalid auth response")
+                jsonData = json.dumps({"result":{"status":"false","code":"500","reason":"Recieved empty response from the service"}})
                 authResponse = Response(jsonData,status=200,content_type="application/json")
                 zk.stop()
                 return authResponse
     else:
-        jsonData = jsonify({"result":{"status":"false","code":"500","reason":"Node does not exists"}})
+        print("Node authservice does not exists")
+        jsonData = json.dumps({"result":{"status":"false","code":"500","reason":"Node does not exists"}})
         resp = Response(jsonData,status=200,content_type="application/json")
         zk.stop()
         return resp
@@ -89,11 +100,11 @@ def userProfileGet(ID):
         try:
             profileResp = requests.get(profileURL + ID)
         except HTTPError as http_err:
-            jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(http_err)}})
+            jsonData = json.dumps({"result":{"status":"false","code":"500","reason":str(http_err)}})
             zk.stop()
             return Response(jsonData,200,content_type="application/json")
         except Exception as err:
-            jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(err)}})
+            jsonData = json.dumps({"result":{"status":"false","code":"500","reason":str(err)}})
             #resp = flask.Response(jsonData,status=200)
             zk.stop()
             return Response(jsonData,200,content_type="application/json")
@@ -103,12 +114,12 @@ def userProfileGet(ID):
                 zk.stop()
                 return profileResp
             else:
-                jsonData = jsonify({"result":{"status":"false","code":"500","reason":"Recieved empty response from the service"}})
+                jsonData = json.dumps({"result":{"status":"false","code":"500","reason":"Recieved empty response from the service"}})
                 #Response = Response(jsonData,status=200)
                 zk.stop()
                 return Response(jsonData,200,content_type="application/json")
     else:
-        jsonData = jsonify({"result":{"status":"false","code":"500","reason":"Node does not exists"}})
+        jsonData = json.dumps({"result":{"status":"false","code":"500","reason":"Node does not exists"}})
         #resp = Response(jsonData,status=200)
         zk.stop()
         return Response(jsonData,200,content_type="application/json")
@@ -128,12 +139,12 @@ def userProfileUpdate(Id,firstName,lastName,emailAddr):
         try:
             profileResp = requests.post(profileURL + ID + "/" + firstName + "/" + lastName + "/" + emailAddr)
         except HTTPError as http_err:
-            jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(http_err)}})
+            jsonData = json.dumps({"result":{"status":"false","code":"500","reason":str(http_err)}})
             #resp = Response(jsonData,status=200)
             zk.stop()
             return Response(jsonData,200,content_type="application/json")
         except Exception as err:
-            jsonData = jsonifyumps({"result":{"status":"false","code":"500","reason":str(err)}})
+            jsonData = json.dumpsumps({"result":{"status":"false","code":"500","reason":str(err)}})
             #resp = Response(jsonData,status=200)
             zk.stop()
             return Response(jsonData,200,content_type="application/json")
@@ -143,29 +154,32 @@ def userProfileUpdate(Id,firstName,lastName,emailAddr):
                 zk.stop()
                 return Response
             else:
-                jsonData = jsonify({"result":{"status":"false","code":"500","reason":"Recieved empty response from the service"}})
+                jsonData = json.dumps({"result":{"status":"false","code":"500","reason":"Recieved empty response from the service"}})
                 #Response = Response(jsonData,status=200)
                 zk.stop()
                 return Response(jsonData,200,content_type="application/json")
     else:
-        jsonData = jsonify({"result":{"status":"false","code":"500","reason":"Node does not exists"}})
+        jsonData = json.dumps({"result":{"status":"false","code":"500","reason":"Node does not exists"}})
         #resp = Response(jsonData,status=200)
         zk.stop()
         return Response(jsonData,200,content_type="application/json")
 
 @app.route('/acct/balanceget/<ID>',methods=['GET'])
 def userBalanceGet(ID):
+    print("Request recieved for account balance")
     zk = KazooClient(hosts=config.ZOOKEEPER_HOST)
     zk.start()
     services = []
+    print("Before checking zookeeper node")
     if zk.exists("/microservices/accountservice"):
+        print("Zookeeper node accountservice exists")
         data = zk.get("/microservices/accountservice")
         data = json.dumps(data)
         jsonData = json.loads(data)
         Data = jsonData[0]
         JsonData = json.loads(Data)
         balanceURL = str(JsonData["balanceget"]["url"])
-
+        print("AccountBalanceService URL : " + balanceURL)
         #balanceURL = "http://0.0.0.0:4004/acct/balanceget/"
 
         try:
@@ -173,28 +187,31 @@ def userBalanceGet(ID):
             balanceResp = requests.get(balanceURL + ID)
             print("After getting response")
         except HTTPError as http_err:
-            jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(http_err)}})
-            #resp = Response(jsonData,status=200)
+            print("Http error occured : " + str(http_err))
+            jsonData = json.dumps({"result":{"status":"false","code":"500","reason":str(http_err)}})
             zk.stop()
             return Response(jsonData,200,content_type="application/json")
         except Exception as err:
-            jsonData = jsonify({"result":{"status":"false","code":"500","reason":str(err)}})
+            print("Exception occured : " + str(err))
+            jsonData = json.dumps({"result":{"status":"false","code":"500","reason":str(err)}})
             #resp = Response(jsonData,status=200)
             zk.stop()
             return Response(jsonData,200,content_type="application/json")
         else:
             if balanceResp:
+                print("Got valid balance response")
                 balanceResp = Response(balanceResp,status=200,content_type="application/json")
                 zk.stop()
+                print("Returning balance response")
                 return balanceResp
             else:
-                jsonData = jsonify({"result":{"status":"false","code":"500","reason":"Recieved empty response from the service"}})
-                #Response = Response(jsonData,status=200)
+                print("Got invalid balance response")
+                jsonData = json.dumps({"result":{"status":"false","code":"500","reason":"Recieved empty response from the service"}})
                 zk.stop()
                 return Response(jsonData,200,content_type="application/json")
     else:
-        jsonData = jsonify({"result":{"status":"false","code":"500","reason":"Node does not exists"}})
-        #resp = Response(jsonData,status=200)
+        print("Zookeeper account service node does not exists")
+        jsonData = json.dumps({"result":{"status":"false","code":"500","reason":"Node does not exists"}})
         zk.stop()
         return Response(jsonData,200,content_type="application/json")
 
