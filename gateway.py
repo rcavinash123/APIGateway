@@ -220,7 +220,7 @@ if __name__ == '__main__':
     try:
         zk = KazooClient(hosts=config.ZOOKEEPER_HOST,timeout=5,max_retries=3)
         zk.start()
-        data = json.dumps({"endpoints":{"url":"http://192.168.200.196:30954"}})
+        data = json.dumps({"endpoints":{"url":"http://192.168.200.148:30838"}})
         if zk.exists("/apigateway"):
             zk.set("/apigateway",data)
         else:
