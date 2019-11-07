@@ -31,10 +31,5 @@ spec:
         env:
           - name: DEBUG_MODE
             value: "0"
-        readinessProbe:
-          httpGet:
-            path: /auth/healthz
-            port: 4001
-          initialDelaySeconds: 20
-          periodSeconds: 20
+        
           
