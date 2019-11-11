@@ -1,5 +1,4 @@
-FROM python:2.7
-RUN apt update
+FROM python:2.7-windowsservercore
 COPY . /APIGateway
 WORKDIR /APIGateway
 ADD requirements.txt /APIGateway/requirements.txt
