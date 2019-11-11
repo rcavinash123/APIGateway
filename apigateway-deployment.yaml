@@ -31,9 +31,4 @@ spec:
         env:
           - name: DEBUG_MODE
             value: "0"
-<<<<<<< HEAD
           
-=======
-        
-          
->>>>>>> db78bcdbaf99ba0142e14cef08ca7c36f8997eb8
