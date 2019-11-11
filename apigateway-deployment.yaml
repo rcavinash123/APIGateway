@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: apigateway
@@ -31,4 +31,9 @@ spec:
         env:
           - name: DEBUG_MODE
             value: "0"
+<<<<<<< HEAD
           
+=======
+        
+          
+>>>>>>> db78bcdbaf99ba0142e14cef08ca7c36f8997eb8
